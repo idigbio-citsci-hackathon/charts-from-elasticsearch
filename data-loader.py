@@ -32,6 +32,7 @@ mapping = {
     "BioEventSiteRef*ColDateVisitedFrom": "collectionDate",
     "Collection date": "collectionDate",
     "eventDate": "collectionDate",
+    "Begin Date Collected": "collectionDate",
 
     "Country": "country",
     "country": "country",
@@ -46,6 +47,36 @@ mapping = {
 
     "decimalLongitude": "longitude",
     "BioEventSiteRef*LatLongitude_nesttab": "longitude",
+}
+
+country_remap = {
+    "United States": "United States of America",
+    "USA": "United States of America",
+    "United State of America": "United States of America",
+    "usa": "United States of America",
+    "U.S.A.": "United States of America",
+    "U.S.": "United States of America",
+    "US": "United States of America",
+    "Usa": "United States of America",
+    "united states": "United States of America",
+    "Unitred States": "United States of America",
+    "Usa": "United States of America",
+    "unknown": "",
+    "placeholder": "",
+    "Phillipines": "Philippines",
+    "Trinidad & Tobago": "Trinidad and Tobago",
+    "Bahamas": "The Bahamas",
+    "Uraguay": "Uruguay",
+    "Afganistan": "Afghanistan",
+    "United Arab Erimates": "United Arab Emirates",
+    "Great Britain": "United Kingdom",
+    "Korea Sout": "South Korea",
+    "Korea South": "South Korea",
+    "mexico": "Mexico",
+    "MEXICO": "Mexico",
+    "MEX": "Mexico",
+    "Korean North": "North Korea",
+    "Cote D'Ivoire": "Ivory Coast",
 }
 
 es_mapping = {
@@ -69,8 +100,7 @@ es_mapping = {
                "index" : "not_analyzed"
            },
            "collectionDate": {
-               "type": "string",
-               "index" : "not_analyzed"
+               "type": "date"
            },
            "scientificName": {
                "type": "string",
@@ -134,9 +164,17 @@ for fn in glob.iglob("*.csv"):
                 if f in mapping:
                     mapped[mapping[f]] = d[f] 
 
-            for k in ["transcribe_date","validate_date"]:
+            for k in ["transcribe_date","validate_date","collectionDate"]:
                 if k in mapped:
-                    mapped[k] = parse(mapped[k])
+                    try: 
+                      mapped[k] = parse(mapped[k])
+                    except:
+                      mapped[k] = None
+                      #print "parser failure", mapped[k]
+
+            if "country" in mapped:
+                if mapped["country"] in country_remap:
+                    mapped["country"] = country_remap[mapped["country"]]
 
             mapped["raw"] = d
             mapped["datafile"] = fn
