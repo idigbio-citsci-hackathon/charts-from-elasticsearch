@@ -96,14 +96,10 @@ $(function(){
         "filter": {
           "and": [
             {
-              "terms": {
-                "datafile": projects
-              }
-            },
-            {
               "range": {
-                "collectionDate": {
-                  "lte": "2014-01-01",
+                "datecollected": {
+                  "gte": "1800-02-01",
+                  "lte": "2015-01-01"
                 }
               }
             }
@@ -114,16 +110,9 @@ $(function(){
     "aggs": {
       "dh": {
         "date_histogram": {
-          "field": "collectionDate",
+          "field": "datecollected",
           "interval": "1y",
           "format" : "yyyy-MM-dd"
-        },
-        "aggs": {
-          "up": {
-            "terms": {
-              "field": "datafile"
-            }
-          }
         }
       }
     }
@@ -131,7 +120,7 @@ $(function(){
 
   $.ajax({
     method: "POST",
-    url: "http://search.idigbio.org/hackathon/transcriptions/_search",
+    url: "http://search.idigbio.org/idigbio/records/_search",
     data: JSON.stringify(query),
     success: function(query_data){
       data = query_data.aggregations.dh.buckets;
